@@ -16,7 +16,7 @@ def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.
                limit: Optional[int] = 10, skip: Optional[int] = 0, q: Optional[str] = None):
     # posts=connection.execute("SELECT * FROM posts").fetchall()
     # posts=db.query(models.Post).filter(models.Post.title.contains(q)).limit(limit).offset(skip).all()
-    posts=db.query(models.Post, func.count(models.Post.id).label('votes')).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id)
+    posts=db.query(models.Post, func.count(models.Post.id).label('votes')).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.title.contains(q)).limit(limit).offset(skip).all()
     # posts=db.query(models.Post).all()
     print(posts)
     
@@ -28,7 +28,8 @@ def create_post(post: schemas.PostCreate, db: Session = Depends(get_db), current
     # print(post.dict())
     # new_post=models.Post(title=post.title, content=post.content, published=post.published)
 
-    new_post=models.Post(owner_id = current_user.id, **post.dict())
+    new_post=models.Post(owner_id = current_user.id, **post.dict()) # the ** is to unpack the dictionary
+    # print(new_post.__dict__)
     db.add(new_post)
     db.commit()
     db.refresh(new_post) #
@@ -75,7 +76,7 @@ def update_post(post_id: int, post: schemas.PostCreate, db: Session = Depends(ge
     if post_query.first() is None:
         raise HTTPException(status_code=404, detail="Post not found")
     if post_query.first().owner_id != current_user.id:
-        raise HTTPException(status_code=403, detail="You are not allowed to delete this post")
+        raise HTTPException(status_code=403, detail="You are not allowed to update this post")
     post_query.update(post.model_dump(), synchronize_session=False)
     db.commit()
    

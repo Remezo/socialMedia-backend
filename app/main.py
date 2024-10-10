@@ -19,7 +19,7 @@ logging.getLogger('passlib').setLevel(logging.ERROR)
 
 
 
-models.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine) #this is to create the tables in the database.
 
 app = FastAPI()
 
@@ -40,4 +40,4 @@ app.include_router(auth.router)
 app.include_router(vote.router)
 
 
-app.get("/")(lambda: {"Hello": "production"})
+app.get("/")(lambda: {"Hello": "production ubuntu -tem"})

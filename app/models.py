@@ -5,7 +5,7 @@ from sqlalchemy.orm import DeclarativeBase, relationship, mapped_column
 
 import datetime
 
-
+# this represents tables in the database
 class Base(DeclarativeBase):
     pass
 
@@ -19,7 +19,7 @@ class Post(Base):
     published = mapped_column(Boolean,server_default='true', nullable=False)
     timestamp = mapped_column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
 
-    owner=relationship("User")  
+    owner=relationship("User")  #it loads the relationship automatically
 
 class User(Base):
     __tablename__ = "users"

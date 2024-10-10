@@ -8,8 +8,8 @@ from .config import settings
 # SQLALCHEMY_DATABASE_URL = "postgresql://postgres:Depine123@localhost/fastapi"
 SQLALCHEMY_DATABASE_URL =f'postgresql://{settings.database_username}:{settings.database_password}@{settings.database_hostname}/{settings.database_name}'
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = create_engine(SQLALCHEMY_DATABASE_URL) #this is what responsible to connect to a database.
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)# this is to talk to a session to the database.
 
 # Dependency
 def get_db():

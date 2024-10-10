@@ -1,0 +1,38 @@
+version: "3"
+services:
+  api:
+    image: remezo/fastapi
+    ports: 
+      - 80:8000
+    # volumes:
+    #   - .:/usr/src/app
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      DATABASE_HOSTNAME: {DATABASE_HOSTNAME}
+      DATABASE_PORT: {DATABASE_PORT}
+      DATABASE_PASSWORD: {DATABASE_PASSWORD}
+      DATABASE_USERNAME: {DATABASE_USERNAME}
+      DATABASE_NAME: {DATABASE_NAME}
+      SECRET_KEY: {SECRET_KEY}
+      ALGORITHM: {ALGORITHM}
+      ACCESS_TOKEN_EXPIRE_MINUTES: {ACCESS_TOKEN_EXPIRE_MINUTES}
+    depends_on:
+      - db
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Depine123
+      POSTGRES_DB: fastapi
+    ports:
+      - 5433:5432
+
+    volumes:
+        - postgres-db:/var/lib/postgresql/data
+
+volumes:
+    postgres-db:
+
+
+

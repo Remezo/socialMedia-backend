@@ -30,7 +30,7 @@ def create_vote(vote: schemas.Vote, db: Session = Depends(get_db), current_user:
 
     else:
         if vote_query.first() is None:
-            raise HTTPException(status_code=409, detail= f"You- {current_user.id} have already downvoted this post")
+            raise HTTPException(status_code=409, detail= f"vote {vote.post_id} does not exist")
         
         vote_query.delete(synchronize_session=False)
         db.commit()
