@@ -49,7 +49,7 @@ jobs:
         run: pip install -r requirements.txt
       - name: Print environment variables
         run: |
-          echo "DATABASE_HOSTNAME: $DATABASE_HOSTNAME"
+          echo "DATABASE_HOSTNAME: ${{ secrets.DATABASE_HOSTNAME }}"
           echo "DATABASE_PORT: $DATABASE_PORT"
           echo "DATABASE_NAME: $DATABASE_NAME"
           echo "DATABASE_USERNAME: $DATABASE_USERNAME"
