@@ -1,27 +1,30 @@
 name: Build and Deploy Code
 
-on: [push, pull_request]
+on:
+  - push
+  - pull_request
 
 jobs:
-  build:
-    environment:
+  job1:
+    environment: 
       name: Testing
     env:
-      DATABASE_HOSTNAME: localhost
-      DATABASE_PORT: 5432
-      DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
-      DATABASE_NAME: ${{secrets.DATABASE_NAME}}
-      DATABASE_USERNAME: postgres
-      SECRET_KEY: ${{secrets.SECRET_KEY}}
-      ALGORITHM: ${{secrets.ALGORITHM}}
-      ACCESS_TOKEN_EXPIRE_MINUTES: ${{secrets.ACCESS_TOKEN_EXPIRE_MINUTES}}
-
+      DATABASE_HOSTNAME: ${{ secrets.DATABASE_HOSTNAME }}
+      DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+      DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+      DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
+      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALGORITHM: ${{ secrets.ALGORITHM }}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRE_MINUTES }}
+    
     services:
       postgres:
-        image: postgres
+        image: postgres:latest
         env:
-          POSTGRES_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
-          POSTGRES_DB: ${{secrets.DATABASE_NAME}}_test
+          POSTGRES_USER: ${{ secrets.DATABASE_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.DATABASE_NAME }}_test
         ports:
           - 5432:5432
         options: >-
@@ -29,36 +32,25 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        
+        
 
     runs-on: ubuntu-latest
     steps:
-      - name: Pulling git repo
+      - name: Pulling git Repo
         uses: actions/checkout@v2
-
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          until pg_isready -h localhost -p 5432; do
-            echo "Waiting for PostgreSQL..."
-            sleep 1
-          done
-
-      - name: Create test database
-        run: |
-          psql -h localhost -U postgres -c "CREATE DATABASE ${DATABASE_NAME}_test;"
-        env:
-          PGPASSWORD: ${{secrets.DATABASE_PASSWORD}}
-
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+      - name: Install dependencies
+        run: pip install -r requirements.txt
       - name: Run tests
         run: |
-          python -m pip install pytest
-          python -m pip install -r requirements.txt
-          pytest
-        env:
-          DATABASE_HOSTNAME: localhost
-          DATABASE_PORT: 5432
-          DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
-          DATABASE_NAME: ${{secrets.DATABASE_NAME}}_test
-          DATABASE_USERNAME: postgres
-          SECRET_KEY: ${{secrets.SECRET_KEY}}
-          ALGORITHM: ${{secrets.ALGORITHM}}
-          ACCESS_TOKEN_EXPIRE_MINUTES: ${{secrets.ACCESS_TOKEN_EXPIRE_MINUTES}}
+          pip install pytest
+          pytest -v 
+  
+
+      
