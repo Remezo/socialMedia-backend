@@ -50,6 +50,7 @@ jobs:
 
       - name: Run tests
         run: |
+          python -m pip install --upgrade pip
           pytest
         env:
           DATABASE_HOSTNAME: localhost
