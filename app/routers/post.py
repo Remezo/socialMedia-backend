@@ -3,7 +3,7 @@ from ..database import engine, get_db
 from sqlalchemy.orm import Session
 from .. import models, schemas,utils, oauth2
 from fastapi import FastAPI, Response,status, HTTPException, Depends, APIRouter
-from sqlalchemy import func
+from sqlalchemy import func, or_
 
 router = APIRouter(
     prefix="/posts",
@@ -13,14 +13,25 @@ router = APIRouter(
 @router.get("/", response_model=List[schemas.PostResponse_alt])
 # @router.get("/")
 def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user),
-               limit: Optional[int] = 10, skip: Optional[int] = 0, q: Optional[str] = None):
-    # posts=connection.execute("SELECT * FROM posts").fetchall()
-    # posts=db.query(models.Post).filter(models.Post.title.contains(q)).limit(limit).offset(skip).all()
-    posts=db.query(models.Post, func.count(models.Post.id).label('votes')).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.title.contains(q)).limit(limit).offset(skip).all()
-    # posts=db.query(models.Post).all()
-    print(posts)
-    
-    return posts.all()
+               limit: Optional[int] = 10, skip: Optional[int] = 0, q: Optional[str] = ''):
+    # results = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(
+    #     models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id)
+
+    # cursor.execute("""SELECT * FROM posts """)
+    # posts = cursor.fetchall()
+
+    # posts = db.execute(
+    #     'select posts.*, COUNT(votes.post_id) as votes from posts LEFT JOIN votes ON posts.id=votes.post_id  group by posts.id')
+    # results = []
+    # for post in posts:
+    #     results.append(dict(post))
+    # print(results)
+    # posts = db.query(models.Post).filter(
+    #     models.Post.title.contains(search)).limit(limit).offset(skip).all()
+
+    posts = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(
+        models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.title.contains(q)).limit(limit).offset(skip).all()
+    return posts
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
 def create_post(post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
