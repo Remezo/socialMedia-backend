@@ -20,8 +20,6 @@ SQLALCHEMY_DATABASE_URL =f'postgresql://{settings.database_username}:{settings.d
 engine = create_engine(SQLALCHEMY_DATABASE_URL) #this is what responsible to connect to a database.
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)# this is to talk to a session to the database.
 
-models.Base.metadata.create_all(bind=engine) #this is to create the tables in the database.
-
 
 
 # Dependency
