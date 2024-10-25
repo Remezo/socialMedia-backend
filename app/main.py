@@ -19,7 +19,7 @@ logging.getLogger('passlib').setLevel(logging.ERROR)
 
 
 
-models.Base.metadata.create_all(bind=engine) #this is to create the tables in the database.
+# models.Base.metadata.create_all(bind=engine) #this is to create the tables in the database.
 
 app = FastAPI()
 
