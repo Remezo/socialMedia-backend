@@ -1,18 +1,14 @@
 from fastapi.testclient import TestClient
-from app.main import app
 import pytest
-from app.database import engine
-from app.models import Base
-from app.models import User
-from app import schemas
-from app.config import settings
-
 from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker
-import psycopg
-from psycopg.rows import dict_row
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
+from app.main import app
+
+from app.config import settings
 from app.database import get_db
-from app import models
+from app.database import Base
+from alembic import command
 
 # SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"
 # SQLALCHEMY_DATABASE_URL = "postgresql://postgres:Depine123@localhost/fastapi"
